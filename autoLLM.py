@@ -1,8 +1,10 @@
 FP = "./target_file.py"
 execute_times = 3
-topic_description = "query the current time and print it out."
+# topic_description = "query the current time and print it out."
+topic_description = "don't use API and query the current stock price of TSLA and print it out."
 
 
+topic_description += "Only give me the code without any symbol, and don't give any other text. I need to execute right now."
 def read_file(file_path):
     try:
         with open(file_path, 'r') as file:
@@ -32,6 +34,15 @@ def execute_python_script(script_path):
         
     except Exception as e:
         print(f"Error occurred while executing the script: {e}")
+        return None, None
+
+def pip_install(package):
+    try:
+        process = subprocess.Popen(['pip', 'install', package], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        stdout, stderr = process.communicate()
+        return stdout, stderr
+    except Exception as e:
+        print(f"Error occurred while installing package '{package}': {e}")
         return None, None
 
 newMSG = [
@@ -71,6 +82,7 @@ newMSG = [
 
 import os
 from groq import Groq
+import re
 
 def get_api_key(file_path):
     try:
@@ -101,6 +113,15 @@ if api_key:
         response = ""
         response = completion.choices[0].message.content
         # print(response)
+        if "pip install" in response:
+            package_name_match = re.search(r'pip install\s+(\S+)', response)
+            if package_name_match:
+                package_name = package_name_match.group(1)
+                stdout, stderr = pip_install(package_name)
+                if not stderr:
+                    print(f"Package {package_name} installed successfully.")
+                else:
+                    print(f"Error occurred while installing package: {stderr}")
         newMSG.append({"role": "assistant", "content": response})
         modify_file(FP, response)
         stdout, stderr = execute_python_script(FP)
@@ -110,5 +131,5 @@ if api_key:
         if not stderr:
             print("Successfully executed the auto LLM script.")
             break
-    else:
-        print("API key is not available.")
+else:
+    print("API key is not available.")

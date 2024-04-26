@@ -1,4 +1,17 @@
 # Automated Python Script Execution with AI Chat Assistant
+This is a very simple idea to implement, and if anyone is interested, they can also develop or use it together.
+
+Software engineers spend a significant portion of their work time repeatedly copying error logs onto ChatGPT to find solutions and then pasting them back into their IDEs. If this tool is powerful enough, it could save you the time you spend copying and pasting back and forth every day.
+
+Current preliminary capabilities include:
+
+- Modifying Python files
+- Executing Python files
+- Ability to pip install (even slightly modifying to fully execute commands is not a problem)
+I believe these basic capabilities can already yield many simple results. For example:
+
+- Writing and printing the current time
+- Installing software packages, scraping data, and printing current stock prices.
 
 ## Overview
 
