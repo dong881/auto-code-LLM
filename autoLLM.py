@@ -1,10 +1,14 @@
 FP = "./target_file.py"
-execute_times = 3
+execute_times = 10
+DEBUG = False
 # topic_description = "query the current time and print it out."
-topic_description = "don't use API and query the current stock price of TSLA and print it out."
+topic_description = """""
+query the current time in France and print it out.
+"""
 
+topic_description += ", don't use API key and Only give me the fully source code without any symbol, and don't give any other text. I need to execute right now."
+if DEBUG: print(topic_description)
 
-topic_description += "Only give me the code without any symbol, and don't give any other text. I need to execute right now."
 def read_file(file_path):
     try:
         with open(file_path, 'r') as file:
@@ -44,6 +48,12 @@ def pip_install(package):
     except Exception as e:
         print(f"Error occurred while installing package '{package}': {e}")
         return None, None
+
+def extract_code_blocks(text):
+    code_blocks = re.findall(r'```(.*?)```', text, re.DOTALL)
+    if not code_blocks:
+        code_blocks.append(text)
+    return code_blocks
 
 newMSG = [
             {
@@ -93,13 +103,13 @@ def get_api_key(file_path):
         print(f"Error occurred while reading API key from file '{file_path}': {e}")
         return None
 
-api_key_file_path = "api_key.txt"
+api_key_file_path = "./api_key.txt"
 api_key = get_api_key(api_key_file_path)
 
 if api_key:
-    client = Groq(api_key=os.environ.get(api_key))
-
-    for i in range(execute_times):
+    client = Groq(api_key=api_key)
+    i=0
+    while i<execute_times:
         completion = client.chat.completions.create(
             model="llama3-8b-8192",
             messages= newMSG,
@@ -111,25 +121,30 @@ if api_key:
         )
 
         response = ""
+        i+=1
         response = completion.choices[0].message.content
-        # print(response)
-        if "pip install" in response:
-            package_name_match = re.search(r'pip install\s+(\S+)', response)
-            if package_name_match:
-                package_name = package_name_match.group(1)
-                stdout, stderr = pip_install(package_name)
-                if not stderr:
-                    print(f"Package {package_name} installed successfully.")
-                else:
-                    print(f"Error occurred while installing package: {stderr}")
-        newMSG.append({"role": "assistant", "content": response})
-        modify_file(FP, response)
-        stdout, stderr = execute_python_script(FP)
-        print(stdout)
-        # print(stderr)
-        newMSG.append({"role": "user", "content": stderr})
-        if not stderr:
-            print("Successfully executed the auto LLM script.")
-            break
+        response_list = extract_code_blocks(response)
+        if DEBUG: print(response_list)
+        for response in response_list:
+            if DEBUG: print(response)
+            if "pip install" in response:
+                package_name_match = re.search(r'pip install\s+(\S+)', response)
+                if package_name_match:
+                    package_name = package_name_match.group(1)
+                    stdout, stderr = pip_install(package_name)
+                    if not stderr:
+                        print(f"Package {package_name} installed successfully.")
+                    else:
+                        print(f"Error occurred while installing package: {stderr}")
+            newMSG.append({"role": "assistant", "content": response})
+            modify_file(FP, response)
+            stdout, stderr = execute_python_script(FP)
+            print(stdout)
+            if DEBUG: print(stderr)
+            newMSG.append({"role": "user", "content": stderr})
+            if not stderr:
+                print(f"Successfully executed the auto LLM script in {i} times.")
+                i=execute_times
+                break
 else:
     print("API key is not available.")

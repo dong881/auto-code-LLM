@@ -1,13 +1,8 @@
-import requests
-from bs4 import BeautifulSoup
-import json
+import pytz
+from datetime import datetime
 
-url = 'https://www.alphavantage.co/query'
-params = {
-    'function': 'GLOBAL_QUOTE',
-    'symbol': 'TSLA',
-    'apikey': 'YOUR_API_KEY'  # Replace with your own API key
-}
-response = requests.get(url, params=params)
-soup = BeautifulSoup(response.text, 'html.parser')
-print(json.loads(soup.text)['Global Quote']['05. price'])
+timezones = ['Europe/Paris']
+for tz in timezones:
+    p = pytz.timezone(tz)
+    now = datetime.now(p)
+    print(now.strftime('%Y-%m-%d %H:%M:%S %Z%z'))
