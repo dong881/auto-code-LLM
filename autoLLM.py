@@ -55,48 +55,15 @@ def extract_code_blocks(text):
         code_blocks.append(text)
     return code_blocks
 
-# newMSG = [
-#             {
-#                 "role": "system",
-#                 "content": "only give me the code without any symbol, and don't give any other text. I need to execute right now."
-#             },
-#             {
-#                 "role": "user",
-#                 "content": "get the current web https://www.ntust.edu.tw/home.php news"
-#             },
-#             {
-#                 "role": "assistant",
-#                 "content": "import requests\nimport json\nimport datetime\n\nurl = \"https://www.ntust.edu.tw/home.php\"\nresponse = requests.get(url)\nsoup = BeautifulSoup(response.text, 'html.parser')\nnews = soup.find_all('div', {'class': 'content-wrap'})\n\nfor news_i in news:\n    title = news_i.find('h2').text\n    content = news_i.find('p').text\n    publishdate = news_i.find('span', {'class': 'date'}).text\n    print(f\"{title}\\n{content}\\n{publishdate}\\n\")"
-#             },
-#             {
-#                 "role": "user",
-#                 "content": "Traceback (most recent call last):\n  File \"/home/azureuser/target_file.py\", line 7, in <module>\n    soup = BeautifulSoup(response.text, 'html.parser')\n           ^^^^^^^^^^^^^\nNameError: name 'BeautifulSoup' is not defined"
-#             },
-#             {
-#                 "role": "assistant",
-#                 "content": "from bs4 import BeautifulSoup\nimport requests\nimport json\nimport datetime\n\nurl = \"https://www.ntust.edu.tw/home.php\"\nresponse = requests.get(url)\nsoup = BeautifulSoup(response.text, 'html.parser')\nnews = soup.find_all('div', {'class': 'content-wrap'})\n\nfor news_i in news:\n    title = news_i.find('h2').text\n    content = news_i.find('p').text\n    publishdate = news_i.find('span', {'class': 'date'}).text\n    print(f\"{title}\\n{content}\\n{publishdate}\\n\")"
-#             },
-#             {
-#                 "role": "user",
-#                 "content": "Traceback (most recent call last):\n  File \"/home/azureuser/target_file.py\", line 4, in <module>\n    from bs4 import BeautifulSoup\nModuleNotFoundError: No module named 'bs4'"
-#             },
-#             {
-#                 "role": "assistant",
-#                 "content": "pip install beautifulsoup4"
-#             },
-#             {
-#                 "role": "user",
-#                 "content": "Great. Follow the above rules. Next, please help me write a query using python to "+topic_description
-#             },
-#         ]
+def RESET_ALL():
+    git_utils.git_reset_hard()
+    newMSG_content = ""
+    with open("system_message.txt", "r") as file:
+        newMSG_content = file.read()
+        newMSG_content += topic_description
+    newMSG = eval(newMSG_content)  
 
-newMSG_content = ""
-with open("system_message.txt", "r") as file:
-    newMSG_content = file.read()
-
-newMSG = eval(newMSG_content)  
-newMSG += topic_description
-
+RESET_ALL()
 import os
 import ollama
 import re
@@ -136,9 +103,7 @@ while True:
             if DEBUG: print(stderr)
             newMSG.append({"role": "user", "content": stderr})
             if stderr:
-                git_utils.git_reset_hard()
-                newMSG = eval(newMSG_content)  
-                newMSG += topic_description
+                RESET_ALL()
             else:
                 print(f"Successfully executed the auto LLM script in {i} times.")
                 msg = git_utils.git_diff()
@@ -155,7 +120,6 @@ while True:
 
     except Exception as e:
         print(e)
-        git_utils.git_reset_hard()
-        newMSG = eval(newMSG_content)  
-        newMSG += topic_description
+        RESET_ALL()
+
 
