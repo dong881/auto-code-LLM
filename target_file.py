@@ -1,8 +1,5 @@
-import pytz
-from datetime import datetime
+import datetime
 
-timezones = ['Europe/Paris']
-for tz in timezones:
-    p = pytz.timezone(tz)
-    now = datetime.now(p)
-    print(now.strftime('%Y-%m-%d %H:%M:%S %Z%z'))
+now = datetime.datetime.now()
+
+print("Current Time: ", now)
