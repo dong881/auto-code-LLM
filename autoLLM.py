@@ -64,8 +64,8 @@ def RESET_ALL():
     newMSG_content = ""
     with open("system_message.txt", "r") as file:
         newMSG_content = file.read()
-        newMSG_content += topic_description
     newMSG = eval(newMSG_content)  
+    newMSG[-1]["content"] += topic_description
 
 RESET_ALL()
 import os
@@ -122,6 +122,6 @@ while True:
 
     except Exception as e:
         print(e)
-        RESET_ALL()
+        # RESET_ALL()
 
 
