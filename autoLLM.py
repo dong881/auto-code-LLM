@@ -2,9 +2,9 @@ FP = "./target_file.py"
 # execute_times = 10
 DEBUG = False
 # topic_description = "query the current time and print it out."
-topic_description = "query the current time and print it out."
+topic_description = "write a greedy snake game, and make sure it can run and play."
 
-topic_description += ", don't use API key and Only give me the fully source code without any symbol, and don't give any other text. I need to execute right now."
+topic_description += ", Only give me the fully source code without any symbol, and don't give any other text. I need to execute right now."
 if DEBUG: print(topic_description)
 
 def read_file(file_path):
