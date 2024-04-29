@@ -121,6 +121,6 @@ while True:
     except Exception as e:
         print(e)
         newMSG = RESET_ALL()
-        # git_utils.git_reset_hard()
+        git_utils.git_reset_hard()
 
 
