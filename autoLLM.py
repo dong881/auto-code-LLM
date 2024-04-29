@@ -2,9 +2,7 @@ FP = "./target_file.py"
 # execute_times = 10
 DEBUG = False
 # topic_description = "query the current time and print it out."
-topic_description = """""   
-query the current time and print it out.
-"""
+topic_description = "query the current time and print it out."
 
 topic_description += ", don't use API key and Only give me the fully source code without any symbol, and don't give any other text. I need to execute right now."
 if DEBUG: print(topic_description)
@@ -58,21 +56,20 @@ def extract_code_blocks(text):
 
 import git_utils
 
-newMSG = ""
 def RESET_ALL():
-    git_utils.git_reset_hard()
     newMSG_content = ""
     with open("system_message.txt", "r") as file:
         newMSG_content = file.read()
-    newMSG = eval(newMSG_content)  
+    newMSG = eval(newMSG_content)
     newMSG[-1]["content"] += topic_description
+    return newMSG
 
-RESET_ALL()
+newMSG = RESET_ALL()
 import os
 import ollama
 import re
 
-
+print(newMSG)
 while True:
     try:
         stream = ollama.chat(
@@ -105,7 +102,8 @@ while True:
             if DEBUG: print(stderr)
             newMSG.append({"role": "user", "content": stderr})
             if stderr:
-                RESET_ALL()
+                newMSG = RESET_ALL()
+                git_utils.git_reset_hard()
             else:
                 print(f"Successfully executed the auto LLM script in {i} times.")
                 msg = git_utils.git_diff()
@@ -122,6 +120,7 @@ while True:
 
     except Exception as e:
         print(e)
-        # RESET_ALL()
+        newMSG = RESET_ALL()
+        # git_utils.git_reset_hard()
 
 
