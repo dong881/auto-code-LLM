@@ -105,7 +105,7 @@ while True:
                 newMSG = RESET_ALL()
                 git_utils.git_reset_hard()
             else:
-                print(f"Successfully executed the auto LLM script in {i} times.")
+                print(f"Successfully executed the auto LLM script in times.")
                 msg = git_utils.git_diff()
                 msg += "write git push commit"
 
