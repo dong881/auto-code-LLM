@@ -3,7 +3,7 @@ import ollama
 
 # print(git_utils.git_diff())
 msg = git_utils.git_diff()
-msg += "write git push commit"
+msg += "help me write git commit"
 
 response = ollama.chat(model='llama3:latest', messages=[
   {
