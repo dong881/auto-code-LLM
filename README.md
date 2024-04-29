@@ -24,6 +24,15 @@ Before running the scripts, ensure you have the following installed:
 - Python 3.x
 - `pip` package manager
 - Access to the internet to install Python packages and interact with the AI chat assistant API.
+- Ollama: winodws -> [LINK](https://ollama.com/download/windows)
+- Ollama: Linux
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+- Ollama execute:
+```bash
+ollama run llama3
+```
 
 ## Setup
 
