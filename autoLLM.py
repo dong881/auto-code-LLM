@@ -153,8 +153,8 @@ while True:
                 git_utils.git_commit_and_push(response)
             
 
-    except:
-        print("error")
+    except Exception as e:
+        print(e)
         git_utils.git_reset_hard()
         newMSG = eval(newMSG_content)  
         newMSG += topic_description
