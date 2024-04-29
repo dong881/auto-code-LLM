@@ -58,6 +58,7 @@ def extract_code_blocks(text):
 
 import git_utils
 
+newMSG = ""
 def RESET_ALL():
     git_utils.git_reset_hard()
     newMSG_content = ""
@@ -81,7 +82,6 @@ while True:
         )
 
         response = ""
-
         for chunk in stream:
             response += chunk['message']['content']
         
