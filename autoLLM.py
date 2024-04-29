@@ -55,6 +55,9 @@ def extract_code_blocks(text):
         code_blocks.append(text)
     return code_blocks
 
+
+import git_utils
+
 def RESET_ALL():
     git_utils.git_reset_hard()
     newMSG_content = ""
@@ -67,7 +70,6 @@ RESET_ALL()
 import os
 import ollama
 import re
-import git_utils
 
 
 while True:
