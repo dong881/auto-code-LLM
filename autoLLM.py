@@ -136,7 +136,7 @@ while True:
             if DEBUG: print(stderr)
             newMSG.append({"role": "user", "content": stderr})
             if stderr:
-                git_reset_hard()
+                git_utils.git_reset_hard()
                 newMSG = eval(newMSG_content)  
                 newMSG += topic_description
             else:
@@ -150,8 +150,12 @@ while True:
                     'content': msg,
                 },
                 ])
-                git_commit_and_push(response)
+                git_utils.git_commit_and_push(response)
             
 
-    except e:
-        print(e)
+    except:
+        print("error")
+        git_utils.git_reset_hard()
+        newMSG = eval(newMSG_content)  
+        newMSG += topic_description
+
