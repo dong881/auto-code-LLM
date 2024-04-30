@@ -115,7 +115,7 @@ while True:
                     'content': msg,
                 },
                 ])
-                git_utils.git_commit_and_push(response)
+                print(git_utils.git_commit_and_push(response))
             
 
     except Exception as e:
