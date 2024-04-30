@@ -36,17 +36,8 @@ def main(topicInput):
     newMSG = utils.RESET_ALL(topic_description)
     if DEBUG: print(newMSG)
     if DEBUG: print(topic_description)
-    
-    max_msg_size = 5000
     while True:
         try:
-            if len(json.dumps(newMSG)) > max_msg_size:
-                newMSG.append({"role": "user", "content": "Please consolidate the current progress, including identified issues, potential improvements, and areas for enhancement."})
-                response = ollama.chat(model='llama3:latest', messages=newMSG)
-                new_prompt = response['message']['content']
-                print(new_prompt)
-                newMSG = [{"role": "user", "content": new_prompt}]
-            
             stream = ollama.chat(model='llama3:latest', messages=newMSG, stream=True)
 
             response = ""
@@ -72,7 +63,6 @@ def main(topicInput):
             print(e)
             newMSG = utils.RESET_ALL(topic_description)
             git_utils.git_reset_hard()
-
 
 if __name__ == "__main__":
     main("write a greedy snake game, and make sure it can run and play.")

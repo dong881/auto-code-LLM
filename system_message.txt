@@ -29,6 +29,6 @@
             },
             {
                 "role": "user",
-                "content": "Great. Follow the above rules. Next, please help me write a query using python to "
+                "content": "Great. Follow the above rules. Next, please help me write python code, assist me in optimizing the code to ensure it executes flawlessly! Please optimize the code and add appropriate comments and docstrings to enhance readability. Additionally, ensure robust error handling to accommodate various exceptional scenarios. Furthermore, encapsulate functional code into functions to improve modularity and maintainability. Lastly, remove unnecessary debugging statements and redundant code to streamline the codebase. Please provide the complete code without any symbols and ensure it can be executed directly."
             },
         ]
