@@ -107,7 +107,7 @@ while True:
             else:
                 print(f"Successfully executed the auto LLM script in times.")
                 msg = git_utils.git_diff()
-                msg += "write git push commit"
+                msg += "Organize into git push commit text"
 
                 response = ollama.chat(model='llama3:latest', messages=[
                 {
@@ -115,7 +115,7 @@ while True:
                     'content': msg,
                 },
                 ])
-                print(git_utils.git_commit_and_push(response))
+                print(git_utils.git_commit_and_push(response['message']['content']))
             
 
     except Exception as e:
