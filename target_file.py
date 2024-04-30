@@ -1,4 +1,4 @@
-```
+`
 import random
 import time
 import os
@@ -55,7 +55,16 @@ class SnakeGame:
         self.generate_food()
         while True:
             self.print_board()
-            self.move_snake()
+            new_head = ((self.snake[0][0] + (-1, 0)[self.snake[0][1] % 2 == 0]), (self.snake[0][1] + 1))
+            if not self.check_collision():
+                self.snake.insert(0, new_head)
+                if self.food and self.food == new_head:
+                    self.food = None
+                else:
+                    self.snake.pop()
+            else:
+                print("Game Over!")
+                exit()
             time.sleep(0.5)
 
 game = SnakeGame()
