@@ -54,9 +54,9 @@ def main(topicInput):
                 if not execute_code():
                     continue
                 print("Successfully executed the auto LLM script in times.")
-                newMSG.append({"role": "user", "content": utils.read_file(FP) + "\nimpove current code, and give me fully code"})
+                newMSG.append({"role": "user", "content": utils.read_file(FP) + "\nimpove current code, and  Only give me the fully source code without any symbol, and don't give any other text. I need to execute right now."})
                 msg = git_utils.git_diff()
-                msg += "Organize into git push commit text"
+                msg += "Organize into a simple and clear bulleted list with titles: git push commit text"
                 commit_and_push_changes(msg)
 
         except Exception as e:
