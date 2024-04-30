@@ -77,4 +77,4 @@ def main(topicInput):
 
 
 if __name__ == "__main__":
-    main("write a greedy snake game, and make sure it can run and play.")
+    main("write a greedy snake game, and make sure it can run and play, and use different color or symbol show backgroung and snake.")
