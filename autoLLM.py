@@ -1,12 +1,6 @@
 FP = "./target_file.py"
 # execute_times = 10
 DEBUG = False
-# topic_description = "query the current time and print it out."
-topic_description = "write a greedy snake game, and make sure it can run and play."
-
-topic_description += ", Only give me the fully source code without any symbol, and don't give any other text. I need to execute right now."
-if DEBUG: print(topic_description)
-
 def read_file(file_path):
     try:
         with open(file_path, 'r') as file:
@@ -15,6 +9,14 @@ def read_file(file_path):
     except Exception as e:
         print(f"Error occurred while reading file '{file_path}': {e}")
         return None
+# topic_description = "query the current time and print it out."
+topic_description = read_file(FP)
+topic_description += "write a greedy snake game, and make sure it can run and play."
+
+topic_description += ", Only give me the fully source code without any symbol, and don't give any other text. I need to execute right now."
+if DEBUG: print(topic_description)
+
+
 
 
 def modify_file(file_path, modified_content):
@@ -102,10 +104,11 @@ while True:
             if DEBUG: print(stderr)
             newMSG.append({"role": "user", "content": stderr})
             if stderr:
-                newMSG = RESET_ALL()
+                # newMSG = RESET_ALL()
                 git_utils.git_reset_hard()
             else:
                 print(f"Successfully executed the auto LLM script in times.")
+                newMSG.append({"role": "user", "content": read_file(FP) + "\nimpove current code, and give me fully code"})
                 msg = git_utils.git_diff()
                 msg += "Organize into git push commit text"
 
