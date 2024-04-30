@@ -1,129 +1,67 @@
-FP = "./target_file.py"
-# execute_times = 10
-DEBUG = False
-def read_file(file_path):
-    try:
-        with open(file_path, 'r') as file:
-            content = file.read()
-        return content
-    except Exception as e:
-        print(f"Error occurred while reading file '{file_path}': {e}")
-        return None
-# topic_description = "query the current time and print it out."
-topic_description = read_file(FP)
-topic_description += "write a greedy snake game, and make sure it can run and play."
-
-topic_description += ", Only give me the fully source code without any symbol, and don't give any other text. I need to execute right now."
-if DEBUG: print(topic_description)
-
-
-
-
-def modify_file(file_path, modified_content):
-    try:
-        with open(file_path, 'w') as file:
-            file.write(modified_content)
-        # print(f"File '{file_path}' modified successfully.")
-    except Exception as e:
-        print(f"Error occurred while modifying file '{file_path}': {e}")
-
-
-import subprocess
-
-def execute_python_script(script_path):
-    try:
-        process = subprocess.Popen(['python3', script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-        stdout, stderr = process.communicate()
-        return stdout, stderr
-        
-    except Exception as e:
-        print(f"Error occurred while executing the script: {e}")
-        return None, None
-
-def pip_install(package):
-    try:
-        process = subprocess.Popen(['pip', 'install', package], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-        stdout, stderr = process.communicate()
-        return stdout, stderr
-    except Exception as e:
-        print(f"Error occurred while installing package '{package}': {e}")
-        return None, None
-
-def extract_code_blocks(text):
-    code_blocks = re.findall(r'```(.*?)```', text, re.DOTALL)
-    if not code_blocks:
-        code_blocks.append(text)
-    return code_blocks
-
-
-import git_utils
-
-def RESET_ALL():
-    newMSG_content = ""
-    with open("system_message.txt", "r") as file:
-        newMSG_content = file.read()
-    newMSG = eval(newMSG_content)
-    newMSG[-1]["content"] += topic_description
-    return newMSG
-
-newMSG = RESET_ALL()
-import os
-import ollama
 import re
+import utils
+import git_utils
+import ollama
 
-print(newMSG)
-while True:
-    try:
-        stream = ollama.chat(
-            model='llama3:latest',
-            messages=newMSG,
-            stream=True,
-        )
+FP = "./target_file.py"
+DEBUG = False
 
-        response = ""
-        for chunk in stream:
-            response += chunk['message']['content']
-        
-        response_list = extract_code_blocks(response)
-        if DEBUG: print(response_list)
-        for response in response_list:
-            if DEBUG: print(response)
-            if "pip install" in response:
-                package_name_match = re.search(r'pip install\s+(\S+)', response)
-                if package_name_match:
-                    package_name = package_name_match.group(1)
-                    stdout, stderr = pip_install(package_name)
-                    if not stderr:
-                        print(f"Package {package_name} installed successfully.")
-                    else:
-                        print(f"Error occurred while installing package: {stderr}")
-            newMSG.append({"role": "assistant", "content": response})
-            modify_file(FP, response)
-            stdout, stderr = execute_python_script(FP)
-            print(stdout)
-            if DEBUG: print(stderr)
-            newMSG.append({"role": "user", "content": stderr})
-            if stderr:
-                # newMSG = RESET_ALL()
-                git_utils.git_reset_hard()
+def install_packages(response):
+    if "pip install" in response:
+        package_name_match = re.search(r'pip install\s+(\S+)', response)
+        if package_name_match:
+            package_name = package_name_match.group(1)
+            stdout, stderr = utils.pip_install(package_name)
+            if not stderr:
+                print(f"Package {package_name} installed successfully.")
             else:
-                print(f"Successfully executed the auto LLM script in times.")
-                newMSG.append({"role": "user", "content": read_file(FP) + "\nimpove current code, and give me fully code"})
+                print(f"Error occurred while installing package: {stderr}")
+
+def execute_code():
+    stdout, stderr = utils.execute_python_script(FP)
+    print(stdout)
+    if stderr:
+        if DEBUG: print(stderr)
+        git_utils.git_reset_hard()
+        return False
+    return True
+
+def commit_and_push_changes(msg):
+    response = ollama.chat(model='llama3:latest', messages=[{"role": "user", "content": msg}])
+    print(git_utils.git_commit_and_push(response['message']['content']))
+
+def main(topicInput):
+    topic_description = utils.read_file(FP) + "\n\n" + topicInput
+    topic_description += ", Only give me the fully source code without any symbol, and don't give any other text. I need to execute right now."
+    newMSG = utils.RESET_ALL(topic_description)
+
+    while True:
+        try:
+            stream = ollama.chat(model='llama3:latest', messages=newMSG, stream=True)
+
+            response = ""
+            for chunk in stream:
+                response += chunk['message']['content']
+
+            response_list = utils.extract_code_blocks(response)
+            if not response_list:
+                print("Warning: No code blocks found in the response.")
+            for response in response_list:
+                install_packages(response)
+                newMSG.append({"role": "assistant", "content": response})
+                utils.modify_file(FP, response)
+                if not execute_code():
+                    continue
+                print("Successfully executed the auto LLM script in times.")
+                newMSG.append({"role": "user", "content": utils.read_file(FP) + "\nimpove current code, and give me fully code"})
                 msg = git_utils.git_diff()
                 msg += "Organize into git push commit text"
+                commit_and_push_changes(msg)
 
-                response = ollama.chat(model='llama3:latest', messages=[
-                {
-                    'role': 'user',
-                    'content': msg,
-                },
-                ])
-                print(git_utils.git_commit_and_push(response['message']['content']))
-            
+        except Exception as e:
+            print(e)
+            newMSG = utils.RESET_ALL(topic_description)
+            git_utils.git_reset_hard()
 
-    except Exception as e:
-        print(e)
-        newMSG = RESET_ALL()
-        git_utils.git_reset_hard()
-
-
+if __name__ == "__main__":
+    main("write a greedy snake game, and make sure it can run and play.")
