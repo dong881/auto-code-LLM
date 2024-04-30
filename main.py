@@ -4,7 +4,7 @@ import git_utils
 import ollama
 
 FP = "./target_file.py"
-DEBUG = False
+DEBUG = True
 
 def install_packages(response):
     if "pip install" in response:
@@ -34,7 +34,8 @@ def main(topicInput):
     topic_description = utils.read_file(FP) + "\n\n" + topicInput
     topic_description += ", Only give me the fully source code without any symbol, and don't give any other text. I need to execute right now."
     newMSG = utils.RESET_ALL(topic_description)
-
+    if DEBUG: print(newMSG)
+    if DEBUG: print(topic_description)
     while True:
         try:
             stream = ollama.chat(model='llama3:latest', messages=newMSG, stream=True)

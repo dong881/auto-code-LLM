@@ -1,4 +1,4 @@
-
+```
 import random
 import time
 import os
@@ -55,15 +55,6 @@ class SnakeGame:
         self.generate_food()
         while True:
             self.print_board()
-            dir_input = input("Enter direction (W/A/S/D): ")
-            if dir_input.upper() == 'W' and self.direction != (1, 0):
-                self.direction = (-1, 0)
-            elif dir_input.upper() == 'S' and self.direction != (-1, 0):
-                self.direction = (1, 0)
-            elif dir_input.upper() == 'A' and self.direction != (0, 1):
-                self.direction = (-1, 1)
-            elif dir_input.upper() == 'D' and self.direction != (0, -1):
-                self.direction = (0, -1)
             self.move_snake()
             time.sleep(0.5)
 
