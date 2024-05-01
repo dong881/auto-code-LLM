@@ -10,11 +10,18 @@ def read_file(file_path):
 
 def modify_file(file_path, modified_content):
     try:
-        with open(file_path, 'w') as file:
-            file.write(modified_content)
-        # print(f"File '{file_path}' modified successfully.")
+        if modified_content.strip() and len(modified_content.strip()) > 5:
+            with open(file_path, 'w') as file:
+                file.write(modified_content)
+            print(f"File '{file_path}' modified successfully.")
+            return True
+        else:
+            print(f"Content for file '{file_path}' is either empty or has less than or equal to 5 characters. File not modified.")
+            return False
     except Exception as e:
         print(f"Error occurred while modifying file '{file_path}': {e}")
+        return True
+
 
 
 import subprocess

@@ -61,7 +61,8 @@ def main(topicInput):
             for response in response_list:
                 install_packages(response)
                 newMSG.append({"role": "assistant", "content": response})
-                utils.modify_file(FP, response)
+                if not utils.modify_file(FP, response):
+                    newMSG.append({"role": "user", "content": utils.read_file(FP) + "\nOnly give me the fully code without any symbol. I need to execute right now."})
                 if not execute_code():
                     continue
                 print("Successfully executed the auto LLM script in times.")
