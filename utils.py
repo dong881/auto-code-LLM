@@ -43,7 +43,7 @@ def extract_code_blocks(text):
     code_blocks = re.findall(r'```(.*?)```', text, re.DOTALL)
     if not code_blocks:
         code_blocks.append(text)
-    return code_blocks
+    return '\n'.join(code_blocks)
 
 def RESET_ALL(topic_description):
     newMSG_content = ""
