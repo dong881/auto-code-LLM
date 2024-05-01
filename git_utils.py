@@ -11,15 +11,26 @@ def git_diff():
         # 如果命令執行失敗，輸出錯誤信息
         return f"Error executing command: {e.output.decode('utf-8')}"
 
+def is_connected():
+    try:
+        # 使用socket建立一個TCP連接
+        socket.create_connection(("www.google.com", 80))
+        return True
+    except OSError:
+        return False
+
 def git_commit_and_push(commit_message):
     try:
         # 執行 git add .
         subprocess.run(['git', 'add', '.'])
         # 執行 git commit
         subprocess.run(['git', 'commit', '-m', commit_message])
-        # 執行 git push
-        subprocess.run(['git', 'push'])
-        return "Commit and push successful."
+        if is_connected():
+            # 執行 git push
+            subprocess.run(['git', 'push'])
+            return "Commit and push successful."
+        else:
+            return "no internet, git commit skip git push"
     except subprocess.CalledProcessError as e:
         # 如果命令執行失敗，輸出錯誤信息
         return f"Error executing command: {e.output.decode('utf-8')}"
