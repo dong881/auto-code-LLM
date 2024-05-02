@@ -20,7 +20,7 @@ def install_packages(response):
 
 def execute_code():
     try:
-        stdout, stderr = execute_python_script(FP, timeout=60)  # Set timeout to 60 seconds
+        stdout, stderr = utils.execute_python_script(FP, timeout=60)  # Set timeout to 60 seconds
         print(stdout)
         if stderr:
             if DEBUG:   print(stderr)
