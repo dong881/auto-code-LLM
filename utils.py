@@ -26,10 +26,22 @@ def modify_file(file_path, modified_content):
 
 import subprocess
 
-def execute_python_script(script_path):
+import time
+
+def execute_python_script(script_path, timeout=None):
     try:
         process = subprocess.Popen(['python3', script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-        stdout, stderr = process.communicate()
+        start_time = time.time()
+        while True:
+            stdout, stderr = process.communicate(timeout=1)  # Check output every 1 second
+            if stdout:  # If there is output, reset timer
+                start_time = time.time()
+            if time.time() - start_time > timeout:  # Check if timeout exceeded
+                process.kill()  # Kill the process
+                raise TimeoutError("Script execution timed out")
+            if process.poll() is not None:  # Check if process finished
+                break
+
         return stdout, stderr
         
     except Exception as e:

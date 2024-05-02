@@ -19,13 +19,17 @@ def install_packages(response):
                 print(f"Error occurred while installing package: {stderr}")
 
 def execute_code():
-    stdout, stderr = utils.execute_python_script(FP)
-    print(stdout)
-    if stderr:
-        if DEBUG: print(stderr)
-        git_utils.git_reset_hard()
+    try:
+        stdout, stderr = execute_python_script(FP, timeout=60)  # Set timeout to 60 seconds
+        print(stdout)
+        if stderr:
+            if DEBUG:   print(stderr)
+            git_utils.git_reset_hard()
+            return False
+        return True
+    except TimeoutError as e:
+        print(f"Error: {e}")
         return False
-    return True
 
 def commit_and_push_changes(msg):
     response = ollama.chat(model='llama3:latest', messages=[{"role": "user", "content": msg}])
