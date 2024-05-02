@@ -1,4 +1,6 @@
 import subprocess
+import socket
+
 
 def git_diff():
     try:
