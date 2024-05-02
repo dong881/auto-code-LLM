@@ -62,6 +62,7 @@ def main(topicInput):
                 install_packages(response)
                 newMSG.append({"role": "assistant", "content": response})
                 if not utils.modify_file(FP, response):
+                    newMSG = utils.RESET_ALL(topic_description)
                     newMSG.append({"role": "user", "content": utils.read_file(FP) + "\nOnly give me the fully code without any symbol. I need to execute right now."})
                 if not execute_code():
                     continue
