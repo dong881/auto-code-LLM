@@ -138,5 +138,5 @@ Certainly! Here's a condensed and precise guide on how to write code for a Pytho
 8. `game_over()`
 
 By following these steps and implementing the suggested functions, along with the additional features, you can create a comprehensive Python Snake game with a rich user experience.
-
+please let snake  move automaticly continuously, and display apple.when snake eats apple, it will extand its body length. 
 """)
