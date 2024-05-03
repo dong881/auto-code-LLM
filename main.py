@@ -68,6 +68,7 @@ def main(topicInput):
                 if not utils.modify_file(FP, response):
                     newMSG = utils.RESET_ALL(topic_description)
                     newMSG.append({"role": "user", "content": utils.read_file(FP) + "\nOnly give me the fully code without any symbol. I need to execute right now."})
+                    continue
                 if not execute_code():
                     continue
                 print("Successfully executed the auto LLM script in times.")
