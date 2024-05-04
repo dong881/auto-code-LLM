@@ -1,59 +1,100 @@
-
+import pygame
 import random
-import time
-class SnakeGame:
+
+# Define constants
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+GRID_SIZE = 20
+SNAKE_SIZE = 20
+INITIAL_SPEED = 5
+
+# Colors
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+
+class Snake:
     def __init__(self):
-        self.grid_size=(20,20)
-        self.snake=[(10,10),(9,10),(8,10)]
-        self.food=None
-        self.direction='down'
-        self.score=0
-    def generate_food(self):
-        while True:
-            x=random.randint(0,self.grid_size[0]-1)
-            y=random.randint(0,self.grid_size[1]-1)
-            if (x,y) not in self.snake and (x,y)!=(10,10):
-                self.food=(x,y)
-                break
-    def move_snake(self):
-        head=self.snake[0]
-        if self.direction=='up':
-            new_head=(head[0],head[1]-1)
-        elif self.direction=='down':
-            new_head=(head[0],head[1]+1)
-        elif self.direction=='left':
-            new_head=(head[0]-1,head[1])
-        else:
-            new_head=(head[0]+1,head[1])
-        if new_head in self.snake or new_head[0]<0 or new_head[0]>=self.grid_size[0] or new_head[1]<0 or new_head[1]>=self.grid_size[1]:
-            return False
-        self.snake.insert(0,new_head)
-        if self.food and self.food==new_head:
-            del self.food
-        else:
-            self.snake.pop()
-        return True
-    def play_game(self):
-        while True:
-            for x in range(self.grid_size[0]):
-                for y in range(self.grid_size[1]):
-                    if (x,y) in self.snake:
-                        print('*',end=' ')
-                    elif (x,y)==self.food:
-                        print('F',end=' ')
-                    else:
-                        print('~',end=' ')
-                print()
-            command=input("Enter a direction (up/down/left/right) or 'quit' to exit: ").lower()
-            if command=='quit':
-                break
-            elif command in ['up','down','left','right']:
-                self.direction=command
-            else:
-                continue
-            while not self.move_snake():
-                print("Game Over! Final score: ",self.score)
-                return
-game=SnakeGame()
-while True:
-    game.play_game()
+        self.body = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
+        self.direction = 'RIGHT'
+
+    def move(self):
+        head = self.body[0]
+        x, y = head
+        if self.direction == 'UP':
+            y -= GRID_SIZE
+        elif self.direction == 'DOWN':
+            y += GRID_SIZE
+        elif self.direction == 'LEFT':
+            x -= GRID_SIZE
+        elif self.direction == 'RIGHT':
+            x += GRID_SIZE
+        self.body.insert(0, (x, y))
+        self.body.pop()
+
+    def grow(self):
+        tail = self.body[-1]
+        x, y = tail
+        if self.direction == 'UP':
+            y += GRID_SIZE
+        elif self.direction == 'DOWN':
+            y -= GRID_SIZE
+        elif self.direction == 'LEFT':
+            x += GRID_SIZE
+        elif self.direction == 'RIGHT':
+            x -= GRID_SIZE
+        self.body.append((x, y))
+
+    def draw(self, surface):
+        for segment in self.body:
+            pygame.draw.rect(surface, GREEN, (*segment, SNAKE_SIZE, SNAKE_SIZE))
+
+class Apple:
+    def __init__(self):
+        self.position = (random.randint(0, SCREEN_WIDTH - GRID_SIZE) // GRID_SIZE * GRID_SIZE,
+                         random.randint(0, SCREEN_HEIGHT - GRID_SIZE) // GRID_SIZE * GRID_SIZE)
+
+    def draw(self, surface):
+        pygame.draw.rect(surface, RED, (*self.position, SNAKE_SIZE, SNAKE_SIZE))
+
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.display.set_caption('Snake Game')
+    clock = pygame.time.Clock()
+
+    snake = Snake()
+    apple = Apple()
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP]:
+            snake.direction = 'UP'
+        elif keys[pygame.K_DOWN]:
+            snake.direction = 'DOWN'
+        elif keys[pygame.K_LEFT]:
+            snake.direction = 'LEFT'
+        elif keys[pygame.K_RIGHT]:
+            snake.direction = 'RIGHT'
+
+        snake.move()
+
+        if snake.body[0] == apple.position:
+            snake.grow()
+            apple = Apple()
+
+        screen.fill(WHITE)
+        snake.draw(screen)
+        apple.draw(screen)
+        pygame.display.update()
+        clock.tick(INITIAL_SPEED)
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()
