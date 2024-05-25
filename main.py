@@ -65,6 +65,7 @@ def main(topicInput):
             for response in response_list:
                 install_packages(response)
                 newMSG.append({"role": "assistant", "content": response})
+                if DEBUG: print(response)
                 if not utils.modify_file(FP, response):
                     newMSG = utils.RESET_ALL(topic_description)
                     newMSG.append({"role": "user", "content": response + "\nOnly give me the fully code without any symbol. I need to execute right now."})
@@ -85,7 +86,7 @@ def main(topicInput):
 
 if __name__ == "__main__":
     main("""
-Certainly! Here's a condensed and precise guide on how to write code for a Python Snake game, broken down into step-by-step instructions along with the necessary basic functions to implement. Additionally, I'll suggest some creative extra features to enhance the game. 
+precise guide on how to write code for a Python Snake game, broken down into step-by-step instructions along with the necessary basic functions to implement. Additionally, I'll suggest some creative extra features to enhance the game. 
 
 **Step-by-Step Guide:**
 
