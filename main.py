@@ -54,7 +54,8 @@ def main(topicInput):
                 print(new_prompt)
                 newMSG = [{"role": "user", "content": new_prompt}]
             
-            response = ollama.chat(model='llama3:latest', messages=newMSG)['message']['content']
+            response = ollama.chat(model='llama3:latest', messages=newMSG)
+            response = response['message']['content']
             print(response)
             response_list = utils.extract_code_blocks(response)
             if not response_list:
@@ -71,7 +72,7 @@ def main(topicInput):
                     continue
                 print("Successfully executed the auto LLM script in times.")
                 if success_time > 5: return True
-                else success_time += 1
+                else: success_time += 1
                 newMSG.append({"role": "user", "content": utils.read_file(FP) + "\nimpove current code, and  Only give me the fully source code without any symbol, and don't give any other text. I need to execute right now."})
                 msg = git_utils.git_diff()
                 msg += "Organize into a simple and clear bulleted list with titles: git commit text"
