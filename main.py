@@ -54,8 +54,8 @@ def main(topicInput):
                 print(new_prompt)
                 newMSG = [{"role": "user", "content": new_prompt}]
             
-            response = ollama.chat(model='llama3:latest', messages=newMSG)
-            response = response['message']['content']
+            output = ollama.chat(model='llama3:latest', messages=newMSG)
+            response = output['message']['content']
             print(response)
             response_list = utils.extract_code_blocks(response)
             if not response_list:
