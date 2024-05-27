@@ -38,9 +38,8 @@ def commit_and_push_changes(msg):
 success_time = 0
 def main(topicInput):
     topic_description = utils.read_file(FP) + "\n\n" + topicInput
-    topic_description += ", Only give me the fully source code without any symbol, and don't give any other text. I need to execute right now."
-    # newMSG = utils.RESET_ALL(topic_description)
-    newMSG = topic_description
+    topic_description += ", Only give me the fully source code without any symbol, and don't give any other text. I need full source code to execute right now."
+    newMSG = utils.RESET_ALL(topic_description)
     if DEBUG: print(newMSG)
     if DEBUG: print(topic_description)
     
@@ -54,7 +53,7 @@ def main(topicInput):
                 new_prompt = response['message']['content']
                 print(new_prompt)
                 newMSG = [{"role": "user", "content": new_prompt}]
-            
+            print("still think...")
             output = ollama.chat(model='llama3:latest', messages=newMSG)
             response = output['message']['content']
             print(response)
