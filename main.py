@@ -58,7 +58,7 @@ def main(topicInput):
             response = ""
             for chunk in stream:
                 response += chunk['message']['content']
-
+            if DEBUG: print(response)
             response_list = utils.extract_code_blocks(response)
             if not response_list:
                 print("Warning: No code blocks found in the response.")
