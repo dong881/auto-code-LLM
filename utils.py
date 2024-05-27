@@ -16,7 +16,7 @@ def modify_file(file_path, modified_content):
             print(f"File '{file_path}' modified successfully.")
             return True
         else:
-            # print(f"Content for file '{file_path}' is either empty or has less than or equal to 5 characters. File not modified.")
+            print(f"Content for file '{file_path}' is either empty or has less than or equal to 5 characters. File not modified.")
             return False
     except Exception as e:
         print(f"Error occurred while modifying file '{file_path}': {e}")
@@ -62,7 +62,7 @@ def extract_code_blocks(text):
     code_blocks = re.findall(r'```(.*?)```', text, re.DOTALL)
     if not code_blocks:
         code_blocks.append(text)
-    return '\n'.join(code_blocks)
+    return code_blocks
 
 def RESET_ALL(topic_description):
     newMSG_content = ""

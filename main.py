@@ -53,9 +53,10 @@ def main(topicInput):
                 new_prompt = response['message']['content']
                 print(new_prompt)
                 newMSG = [{"role": "user", "content": new_prompt}]
-            print("still think...")
-            output = ollama.chat(model='llama3:latest', messages=newMSG)
-            response = output['message']['content']
+            output = ollama.chat(model='llama3:latest', messages=newMSG,stream=True)
+            for chunk in stream:
+                response += output['message']['content'].rstrip('\n')
+            
             print(response)
             response_list = utils.extract_code_blocks(response)
             if not response_list:
@@ -85,8 +86,6 @@ def main(topicInput):
 
 
 if __name__ == "__main__":
-    main("Why is the sky blue?")
-    exit()
     main("""
 precise guide on how to write code for a Python Snake game, broken down into step-by-step instructions along with the necessary basic functions to implement. Additionally, I'll suggest some creative extra features to enhance the game. 
 
