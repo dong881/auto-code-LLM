@@ -76,7 +76,7 @@ def main(topicInput):
                 if not execute_code():
                     if DEBUG: print("execute_code error")
                     continue
-                print("Successfully executed the auto LLM script")
+                print("Successfully executed the auto LLM script, then continue to improve the code")
                 # if success_time > 5: return True
                 success_time += 1
                 newMSG = RESET_MSG("impove current code, and  Only give me the fully source code without any symbol, and don't give any other text. I need to execute right now.")
