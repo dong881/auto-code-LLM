@@ -53,10 +53,8 @@ def main(topicInput):
                 new_prompt = response['message']['content']
                 print(new_prompt)
                 newMSG = [{"role": "user", "content": new_prompt}]
-            output = ollama.chat(model='llama3:latest', messages=newMSG,stream=True)
-            for chunk in stream:
-                response += output['message']['content'].rstrip('\n')
-            
+            output = ollama.chat(model='llama3:latest', messages=newMSG)
+            response = output['message']['content']
             print(response)
             response_list = utils.extract_code_blocks(response)
             if not response_list:
