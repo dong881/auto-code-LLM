@@ -2,15 +2,14 @@ import pygame
 import time
 import random
 
-# Initialize the game
 pygame.init()
 
 # Set up the display
-width, height = 800, 600
-display = pygame.display.set_mode((width, height))
+width, height = pygame.display.Info().current_w, pygame.display.Info().current_h
+display = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
 pygame.display.set_caption("Snake Game")
 
-# Set up the colors
+# Define colors
 black = pygame.Color(0, 0, 0)
 white = pygame.Color(255, 255, 255)
 red = pygame.Color(255, 0, 0)
@@ -30,17 +29,21 @@ direction = 'RIGHT'
 change_to = direction
 score = 0
 
-# Set up the game over function
+# Game over function
 def game_over():
     font_style = pygame.font.SysFont(None, 50)
-    message = font_style.render("Game Over! Your score: " + str(score), True, red)
+    message = font_style.render("Game Over!", True, red)
     display.blit(message, [width / 6, height / 3])
     pygame.display.flip()
     time.sleep(2)
-    pygame.quit()
+    # Add some funny screen
+    funny_message = font_style.render("You lost, but you're still awesome!", True, green)
+    display.blit(funny_message, [width / 6, height / 2])
+    pygame.display.flip()
+    time.sleep(2)
     quit()
 
-# Set up the main game loop
+# Main game loop
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -67,16 +70,17 @@ while True:
         direction = 'DOWN'
 
     # Update the snake position
+    step_size = 20
     if direction == 'RIGHT':
-        snake_position[0] += 10
+        snake_position[0] += step_size
     if direction == 'LEFT':
-        snake_position[0] -= 10
+        snake_position[0] -= step_size
     if direction == 'UP':
-        snake_position[1] -= 10
+        snake_position[1] -= step_size
     if direction == 'DOWN':
-        snake_position[1] += 10
+        snake_position[1] += step_size
 
-    # Update the snake body
+    # Snake body mechanism
     snake_body.insert(0, list(snake_position))
     if snake_position[0] == food_position[0] and snake_position[1] == food_position[1]:
         score += 1
@@ -89,13 +93,16 @@ while True:
         food_position = [random.randrange(1, (width // 10)) * 10, random.randrange(1, (height // 10)) * 10]
     food_spawn = True
 
-    # Draw the game screen
+    # Draw the snake and food
     display.fill(black)
     for pos in snake_body:
         pygame.draw.rect(display, green, pygame.Rect(pos[0], pos[1], 10, 10))
     pygame.draw.rect(display, white, pygame.Rect(food_position[0], food_position[1], 10, 10))
+    # Update the display
+    pygame.display.update()
+    clock.tick(15)
 
-    # Check for game over conditions
+    # Game over conditions
     if snake_position[0] < 0 or snake_position[0] > width - 10:
         game_over()
     if snake_position[1] < 0 or snake_position[1] > height - 10:
