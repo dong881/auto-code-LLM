@@ -6,6 +6,7 @@ import json
 
 FP = "./target_file.py"
 DEBUG = True
+success_time = 0
 
 def install_packages(response):
     if "pip install" in response:
@@ -24,7 +25,9 @@ def execute_code():
         print(stdout)
         if stderr:
             if DEBUG:   print(stderr)
-            git_utils.git_reset_hard()
+            descript = stderr + "\nhow to fix?"
+            newMSG = RESET_MSG(descript)
+            if success_time>0: git_utils.git_reset_hard()
             return False
         return True
     except TimeoutError as e:
@@ -35,11 +38,14 @@ def commit_and_push_changes(msg):
     response = ollama.chat(model='llama3:latest', messages=[{"role": "user", "content": msg}])
     print(git_utils.git_commit_and_push(response['message']['content']))
 
-success_time = 0
+def RESET_MSG(msg):
+    topic_description = utils.read_file(FP) + "\n\n" + msg
+    return utils.RESET_ALL(topic_description)
+
 def main(topicInput):
-    topic_description = utils.read_file(FP) + "\n\n" + topicInput
+    topic_description = topicInput
     topic_description += ", Only give me the fully source code without any symbol, and don't give any other text. I need full source code to execute right now."
-    newMSG = utils.RESET_ALL(topic_description)
+    newMSG = RESET_MSG(topic_description)
     if DEBUG: print(newMSG)
     if DEBUG: print(topic_description)
     
@@ -62,16 +68,17 @@ def main(topicInput):
             for res in response_list:
                 install_packages(res)
                 newMSG.append({"role": "assistant", "content": res})
-                if DEBUG: print(res)
+                # if DEBUG: print(res)
                 if not utils.modify_file(FP, res):
                     newMSG = utils.RESET_ALL(topic_description)
                     newMSG.append({"role": "user", "content": response + "\nOnly give me the fully code without any symbol. I need to execute right now."})
                     continue
                 if not execute_code():
+                    if DEBUG: print("execute_code error")
                     continue
-                print("Successfully executed the auto LLM script in times.")
-                if success_time > 5: return True
-                else: success_time += 1
+                print("Successfully executed the auto LLM script")
+                # if success_time > 5: return True
+                success_time += 1
                 newMSG.append({"role": "user", "content": utils.read_file(FP) + "\nimpove current code, and  Only give me the fully source code without any symbol, and don't give any other text. I need to execute right now."})
                 msg = git_utils.git_diff()
                 msg += "Organize into a simple and clear bulleted list with titles: git commit text"
