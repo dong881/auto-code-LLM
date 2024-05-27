@@ -53,20 +53,16 @@ def main(topicInput):
                 print(new_prompt)
                 newMSG = [{"role": "user", "content": new_prompt}]
             
-            stream = ollama.chat(model='llama3:latest', messages=newMSG, stream=True)
-
-            response = ""
-            for chunk in stream:
-                response += chunk['message']['content']
-            if DEBUG: print(response)
+            response = ollama.chat(model='llama3:latest', messages=newMSG)
+            print(response)
             response_list = utils.extract_code_blocks(response)
             if not response_list:
                 print("Warning: No code blocks found in the response.")
-            for response in response_list:
-                install_packages(response)
-                newMSG.append({"role": "assistant", "content": response})
-                if DEBUG: print(response)
-                if not utils.modify_file(FP, response):
+            for res in response_list:
+                install_packages(res)
+                newMSG.append({"role": "assistant", "content": res})
+                if DEBUG: print(res)
+                if not utils.modify_file(FP, res):
                     newMSG = utils.RESET_ALL(topic_description)
                     newMSG.append({"role": "user", "content": response + "\nOnly give me the fully code without any symbol. I need to execute right now."})
                     continue
