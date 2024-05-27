@@ -39,7 +39,8 @@ success_time = 0
 def main(topicInput):
     topic_description = utils.read_file(FP) + "\n\n" + topicInput
     topic_description += ", Only give me the fully source code without any symbol, and don't give any other text. I need to execute right now."
-    newMSG = utils.RESET_ALL(topic_description)
+    # newMSG = utils.RESET_ALL(topic_description)
+    newMSG = topic_description
     if DEBUG: print(newMSG)
     if DEBUG: print(topic_description)
     
@@ -85,6 +86,8 @@ def main(topicInput):
 
 
 if __name__ == "__main__":
+    main("Why is the sky blue?")
+    exit()
     main("""
 precise guide on how to write code for a Python Snake game, broken down into step-by-step instructions along with the necessary basic functions to implement. Additionally, I'll suggest some creative extra features to enhance the game. 
 
