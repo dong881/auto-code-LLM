@@ -53,6 +53,7 @@ def main(topicInput):
     while True:
         try:
             if DEBUG: print(len(json.dumps(newMSG)))
+
             if len(json.dumps(newMSG)) > MAX_MSG_SIZE:
                 newMSG.append({"role": "user", "content": "Please consolidate the current progress, including identified issues, potential improvements, and areas for enhancement."})
                 response = ollama.chat(model='llama3:latest', messages=newMSG)
