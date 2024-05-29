@@ -1,96 +1,115 @@
+
 import pygame
+import time
 import random
 import sys
 
-# Set up the game environment
 pygame.init()
-screen_width = 800
-screen_height = 600
-screen = pygame.display.set_mode((screen_width, screen_height))
+
+white = (255, 255, 255)
+yellow = (255, 255, 0)
+
+dis_width = 600
+dis_height = 400
+
+dis = pygame.display.set_mode((dis_width, dis_height))
 pygame.display.set_caption('Snake Game')
 
-# Define constants
-snake_size = 10
-apple_size = 10
-speed = 5
+clock = pygame.time.Clock()
 
-class Snake:
-    def __init__(self):
-        self.position = [(200, 200), (190, 200), (180, 200)]
-        self.length = len(self.position)
-        self.direction = 'Right'
+snake_block = 10
+appleThickness = 5
 
-    def move_snake(self):
-        if self.direction == 'Right':
-            new_head = ((self.position[0][0] + snake_size), self.position[0][1])
-        elif self.direction == 'Left':
-            new_head = (self.position[0][0] - snake_size, self.position[0][1])
-        elif self.direction == 'Up':
-            new_head = (self.position[0][0], self.position[0][1] - snake_size)
-        elif self.direction == 'Down':
-            new_head = (self.position[0][0], self.position[0][1] + snake_size)
+snake_list = []
+length_of_snake = 1
 
-        if new_head not in self.position:
-            self.position.insert(0, new_head)
-        else:
-            self.length -= 1
-            for i in range(len(self.position) - 1):
-                self.position[i] = self.position[i + 1]
+apple_x = round((dis_width - appleThickness) / 10)
+apple_y = round((dis_height - appleThickness) / 20)
 
-    def check_collision(self):
-        head = self.position[0]
-        if (head[0] < 0 or head[0] >= screen_width or
-            head[1] < 0 or head[1] >= screen_height):
-            return 'Collision with wall'
-        for segment in range(1, len(self.position)):
-            if head == self.position[segment]:
-                return 'Self collision'
+direction = "right"
+change_to = direction
 
-    def draw_snake(self):
-        for position in self.position:
-            pygame.draw.rect(screen, (0, 255, 0), (position[0], position[1], snake_size, snake_size))
+def snake_body(snake_list):
+    for x in snake_list:
+        pygame.draw.rect(dis, yellow, [x[0], x[1], snake_block, snake_block])
 
-class Apple:
-    def __init__(self):
-        self.position = (random.randint(0, screen_width - apple_size),
-                          random.randint(0, screen_height - apple_size))
+def our_snake(apple_x, apple_y, snake_list):
+    head = [0, 0]
+    snake_list.append(head)
 
-    def draw_apple(self):
-        pygame.draw.rect(screen, (255, 0, 0), (self.position[0], self.position[1], apple_size, apple_size))
-
-def main():
-    clock = pygame.time.Clock()
-    snake = Snake()
-    apple = Apple()
+    direction_changer = 0
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT and snake.direction != 'Right':
-                    snake.direction = 'Left'
-                elif event.key == pygame.K_RIGHT and snake.direction != 'Left':
-                    snake.direction = 'Right'
-                elif event.key == pygame.K_UP and snake.direction != 'Down':
-                    snake.direction = 'Up'
-                elif event.key == pygame.K_DOWN and snake.direction != 'Up':
-                    snake.direction = 'Down'
+                quit()
 
-        snake.move_snake()
-        collision_result = snake.check_collision()
+            keys = pygame.key.get_pressed()
 
-        if collision_result:
-            print(collision_result)
-            break
+            if (keys[pygame.K_UP] and direction != "down"):
+                change_to = "up"
+            if (keys[pygame.K_DOWN] and direction != "up"):
+                change_to = "down"
+            if (keys[pygame.K_LEFT] and direction != "right"):
+                change_to = "left"
+            if (keys[pygame.K_RIGHT] and direction != "left"):
+                change_to = "right"
 
-        screen.fill((0, 0, 0))
-        snake.draw_snake()
-        apple.draw_apple()
+        if direction == "up":
+            new_head = [apple_x, apple_y - snake_block]
+        if direction == "down":
+            new_head = [apple_x, apple_y + snake_block]
+        if direction == "left":
+            new_head = [apple_x - snake_block, apple_y]
+        if direction == "right":
+            new_head = [apple_x + snake_block, apple_y]
 
-        pygame.display.flip()
-        clock.tick(speed)
+        snake_list.append(new_head)
 
-if __name__ == '__main__':
-    main()
+        if (new_head[0] >= dis_width or
+                new_head[0] < 0 or
+                new_head[1] >= dis_height or
+                new_head[1] < 0):
+            pygame.quit()
+            quit()
+
+        if new_head in snake_list[:-1]:
+            pygame.quit()
+            quit()
+
+        dis.fill(white)
+
+        snake_body(snake_list)
+        pygame.draw.rect(dis, red, [apple_x, apple_y, appleThickness, appleThickness])
+
+        list_of_snake = snake_list.copy()
+        if (new_head[0] == apple_x and
+                new_head[1] == apple_y):
+            length_of_snake += 1
+
+        else:
+            for x in range(len(list_of_snake) - 1):
+                if list_of_snake[x+1] != new_head:
+                    del list_of_snake[-1]
+
+        pygame.display.update()
+
+        clock.tick(10)
+
+        if (length_of_snake >= 5 or
+                len(snake_list) > dis_width / snake_block * 2):
+            up_score = 0
+
+            while True:
+                pygame.time.wait(2000)
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        quit()
+
+                return
+
+        time.sleep(0.1)
+
+our_snake(apple_x, apple_y, snake_list)
