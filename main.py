@@ -71,8 +71,8 @@ def main(topicInput):
                 newMSG.append({"role": "assistant", "content": res})
                 # if DEBUG: print(res)
                 if not utils.modify_file(FP, res):
-                    newMSG = utils.RESET_ALL(topic_description)
-                    newMSG.append({"role": "user", "content": response + "\nOnly give me the fully code without any symbol. I need to execute right now."})
+                    # newMSG = utils.RESET_ALL(topic_description)
+                    # newMSG.append({"role": "user", "content": response + "\nOnly give me the fully code without any symbol. I need to execute right now."})
                     continue
                 if not execute_code():
                     if DEBUG: print("execute_code error")
