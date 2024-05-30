@@ -20,6 +20,7 @@ def install_packages(response):
                 print(f"Error occurred while installing package: {stderr}")
 
 def execute_code():
+    global success_time
     try:
         stdout, stderr = utils.execute_python_script(FP, timeout=60)  # Set timeout to 60 seconds
         print(stdout)
@@ -43,6 +44,7 @@ def RESET_MSG(msg):
     return utils.RESET_ALL(topic_description)
 
 def main(topicInput):
+    global success_time
     topic_description = topicInput
     topic_description += ", Only give me the fully source code without any symbol, and don't give any other text. I need full source code to execute right now."
     newMSG = RESET_MSG(topic_description)
