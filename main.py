@@ -68,10 +68,10 @@ def main(topicInput):
                 print("Warning: No code blocks found in the response.")
             for res in response_list:
                 install_packages(res)
-                # if DEBUG: print(res)
+                if DEBUG: print(res)
                 if not utils.modify_file(FP, res):
-                    # newMSG = utils.RESET_ALL(topic_description)
-                    # newMSG.append({"role": "user", "content": response + "\nOnly give me the fully code without any symbol. I need to execute right now."})
+                    newMSG = utils.RESET_ALL(topic_description)
+                    newMSG.append({"role": "user", "content": response + "\nOnly give me the fully code without any symbol. I need to execute right now."})
                     continue
                 newMSG.append({"role": "assistant", "content": res})
                 if not execute_code():
