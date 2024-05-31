@@ -2,12 +2,13 @@
 import pygame
 import time
 import random
+from pygame.locals import *
+
 pygame.init()
 
 white = (255, 255, 255)
 yellow = (255, 255, 0)
 black = (0, 0, 0)
-red = (0, 0, 0)
 
 dis_width = 800
 dis_height = 600
@@ -19,9 +20,10 @@ clock = pygame.time.Clock()
 
 snake_block = 10
 appleThickness = 10
-snake_speed = 10
+snake_speed = 15
 
 font_style = pygame.font.SysFont("comicsansms", 25)
+
 def Your_score(score):
     return font_style.render("Your Score: " + str(score), True, yellow)
 
@@ -51,14 +53,17 @@ def gameLoop():
     apple_x = round(random.randrange(0,dis_width - snake_block) / 10.0)*10.0
     apple_y = round(random.randrange(0,dis_height - snake_block) / 10.0)*10.0
 
-    while not game_over:
+    score = 0
 
+    while not game_over:
         while game_close:
             dis.fill(black)
             message_to_screen("You Lost! Press C to play again or Q to quit.", red)
             pygame.display.update()
 
             for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    game_over = True
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q:
                         game_over = True
@@ -111,8 +116,11 @@ def gameLoop():
         pygame.display.update()
 
         if x1 == apple_x and y1 == apple_y:
-            message_to_screen("Snake Ate Apple!", yellow)
+            score += 1
+            message_to_screen("Snake Ate Apple! Score: " + str(score), yellow)
             length_of_snake += 1
+
         clock.tick(snake_speed)
 
     pygame.quit()
+    quit()
