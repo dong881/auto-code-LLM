@@ -10,51 +10,37 @@ white = (255, 255, 255)
 yellow = (255, 255, 0)
 black = (0, 0, 0)
 
-snake_size = 15
-snake_speed = 10
-
 size = width, height = 800, 600
 screen = pygame.display.set_mode(size)
-pygame.display.set_caption('Snake')
+pygame.display.set_caption('Snake Game')
 
 class Snake:
     def __init__(self):
-        self.length = 1
+        self.body = [(width / 2, height / 2)]
         self.direction = 'right'
-        self.body = [[0, 0]]
 
     def move(self):
         if self.direction == 'right':
-            head = [self.body[-1][0] + snake_size, self.body[-1][1]]
+            head = (self.body[-1][0] + 10, self.body[-1][1])
         elif self.direction == 'left':
-            head = [self.body[-1][0] - snake_size, self.body[-1][1]]
+            head = (self.body[-1][0] - 10, self.body[-1][1])
         elif self.direction == 'up':
-            head = [self.body[-1][0], self.body[-1][1] - snake_size]
+            head = (self.body[-1][0], self.body[-1][1] - 10)
         elif self.direction == 'down':
-            head = [self.body[-1][0], self.body[-1][1] + snake_size]
+            head = (self.body[-1][0], self.body[-1][1] + 10)
 
-        if head in self.body:
+        if head in self.body[:-1]:
             return False
-        else:
-            self.body.append(head)
-            return True
+
+        self.body.append(head)
+        return True
 
     def grow(self):
-        if random.randint(0, 100) < 50:
-            direction = ['right', 'left', 'up', 'down'][random.randint(0, 3)]
-            self.direction = direction
-
-    def display(self):
-        for pos in self.body:
-            pygame.draw.rect(screen, yellow, pygame.Rect(pos[0], pos[1], snake_size - 2, snake_size - 2))
+        self.body.append(self.body[-1])
 
 class Food:
     def __init__(self):
-        self.pos = [random.randint(0, (width // snake_size) - 1) * snake_size,
-                     random.randint(0, (height // snake_size) - 1) * snake_size]
-
-    def display(self):
-        pygame.draw.rect(screen, white, pygame.Rect(self.pos[0], self.pos[1], snake_size - 2, snake_size - 2))
+        self.pos = (random.randint(0, width - 10), random.randint(0, height - 10))
 
 def main():
     clock = pygame.time.Clock()
@@ -85,19 +71,20 @@ def main():
 
         if snake.body[-1] == food.pos:
             snake.grow()
+            food = Food()
 
-        snake.display()
-        food.display()
+        for pos in snake.body:
+            pygame.draw.rect(screen, yellow, (pos[0], pos[1], 10, 10))
 
+        pygame.draw.rect(screen, white, (food.pos[0], food.pos[1], 10, 10))
         pygame.display.update()
-
-        clock.tick(snake_speed)
+        clock.tick(60)
 
 def game_over():
     font = pygame.font.Font(None, 36)
     text = font.render('Game Over', True, white)
     screen.fill(black)
-    screen.blit(text, [width // 2 - text.get_width() // 2, height // 2 - text.get_height() // 2])
+    screen.blit(text, [(width / 2) - (text.get_width() / 2), (height / 2) - (text.get_height() / 2)])
     pygame.display.update()
     time.sleep(3)
     pygame.quit()
