@@ -5,57 +5,89 @@ import sys
 
 pygame.init()
 
-size = width, height = 640, 480
-black = 0, 0, 0
-white = 255, 255, 255
-
+size = width, height = 800, 600
 screen = pygame.display.set_mode(size)
-pygame.display.set_caption('Snake Game')
 
-snake = [(200, 200), (210, 200), (220, 200)]
-apple = (400, 300)
+class Snake:
+    def __init__(self):
+        self.length = 5
+        self.body = [[200, 200]]
+        self.direction = "right"
 
-speed = 10
+    def move(self):
+        if self.direction == "right":
+            new_head = [self.body[0][0] + 20, self.body[0][1]]
+        elif self.direction == "left":
+            new_head = [self.body[0][0] - 20, self.body[0][1]]
+        elif self.direction == "up":
+            new_head = [self.body[0][0], self.body[0][1] - 20]
+        elif self.direction == "down":
+            new_head = [self.body[0][0], self.body[0][1] + 20]
 
-score = 0
-direction = 'right'
+        if new_head in self.body[:-1]:
+            return False
+        else:
+            self.body.insert(0, new_head)
+            return True
 
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP and direction != 'down':
-                direction = 'up'
-            elif event.key == pygame.K_DOWN and direction != 'up':
-                direction = 'down'
-            elif event.key == pygame.K_LEFT and direction != 'right':
-                direction = 'left'
-            elif event.key == pygame.K_RIGHT and direction != 'left':
-                direction = 'right'
+    def grow(self):
+        self.length += 1
+        self.body.append([self.body[-1][0], self.body[-1][1]])
 
-    head = snake[0]
-    if direction == 'up':
-        new_head = (head[0], head[1] - speed)
-    elif direction == 'down':
-        new_head = (head[0], head[1] + speed)
-    elif direction == 'left':
-        new_head = (head[0] - speed, head[1])
-    elif direction == 'right':
-        new_head = (head[0] + speed, head[1])
+    def display(self):
+        for pos in self.body:
+            pygame.draw.rect(screen, (255, 0, 0), (pos[0], pos[1], 20, 20))
 
-    snake.insert(0, new_head)
+class Apple:
+    def __init__(self):
+        self.position = [random.randint(0, 38) * 20, random.randint(0, 29) * 20]
 
-    if new_head == apple:
-        score += 1
-        snake.pop()
-    else:
-        snake.pop()
+    def display(self):
+        pygame.draw.rect(screen, (255, 215, 0), (self.position[0], self.position[1], 20, 20))
 
-    screen.fill(black)
-    for pos in snake:
-        pygame.draw.rect(screen, white, pygame.Rect(pos[0], pos[1], 10, 10))
-    pygame.draw.rect(screen, (255, 165, 0), pygame.Rect(apple[0], apple[1], 10, 10))
+def main():
+    clock = pygame.time.Clock()
+    snake = Snake()
+    apple = Apple()
 
-    pygame.display.flip()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP and snake.direction != "down":
+                    snake.direction = "up"
+                elif event.key == pygame.K_DOWN and snake.direction != "up":
+                    snake.direction = "down"
+                elif event.key == pygame.K_LEFT and snake.direction != "right":
+                    snake.direction = "left"
+                elif event.key == pygame.K_RIGHT and snake.direction != "left":
+                    snake.direction = "right"
+
+        if not snake.move():
+            break
+
+        screen.fill((0, 0, 0))
+        apple.display()
+        snake.display()
+
+        pygame.draw.rect(screen, (0, 255, 0), (snake.body[0][0], snake.body[0][1], 20, 20))
+
+        if [snake.body[0][0], snake.body[0][1]] == list(apple.position):
+            apple = Apple()
+            snake.grow()
+
+        pygame.display.flip()
+        clock.tick(10)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        screen.fill((0, 0, 0))
+        pygame.draw.rect(screen, (255, 0, 0), (snake.body[0][0], snake.body[0][1], 20, 20))
+
+        pygame.display.flip()
