@@ -38,14 +38,14 @@ def snake(snake_list):
 
 def message_to_screen(text_color, text):
     screen_text = font_style.render(text, True, text_color)
-    dis.blit(screen_text, [dis_width//6, dis_height//3])
+    dis.blit(screen_text, [(dis_width//6), (dis_height//3)])
 
 def score_message_to_screen(text_color, text):
     screen_text = font_score.render(text, True, text_color)
     dis.blit(screen_text, [0, 0])
 
 snake_head = [400, 300]
-apple_pos = [random.randrange(1,(dis_width-apple_diameter)//20)*20, random.randrange(1,(dis_height-apple_diameter)//15)*20]
+apple_pos = [random.randrange(1, (dis_width-apple_diameter)//20)*20, random.randrange(1, (dis_height-apple_diameter)//15)*20]
 
 def check_game_over(snake_list):
     for each_segment in snake_list[:-1]:
@@ -89,7 +89,7 @@ while not game_over:
     if snake_head[0] == apple_pos[0] and snake_head[1] == apple_pos[1]:
         score += 1
         length += 1
-        apple_pos = [random.randrange(1,(dis_width-apple_diameter)//20)*20, random.randrange(1,(dis_height-apple_diameter)//15)*20]
+        apple_pos = [random.randrange(1, (dis_width-apple_diameter)//20)*20, random.randrange(1, (dis_height-apple_diameter)//15)*20]
     else:
         for each_segment in snake_list[:-1]:
             if each_segment == snake_head:
