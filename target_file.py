@@ -47,6 +47,12 @@ def score_message_to_screen(text_color, text):
 snake_head = [400, 300]
 apple_pos = [random.randrange(1,(dis_width-apple_diameter)//20)*20, random.randrange(1,(dis_height-apple_diameter)//15)*20]
 
+def check_game_over(snake_list):
+    for each_segment in snake_list[:-1]:
+        if each_segment == snake_head:
+            return True
+    return False
+
 while not game_over:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -55,13 +61,13 @@ while not game_over:
 
     keys = pygame.key.get_pressed()
 
-    if keys[pygame.K_UP]:
+    if keys[pygame.K_UP] and snake_head[1] != 0:
         snake_head[1] -= snake_block_size
-    elif keys[pygame.K_DOWN]:
+    elif keys[pygame.K_DOWN] and snake_head[1] != dis_height-apple_diameter:
         snake_head[1] += snake_block_size
-    elif keys[pygame.K_LEFT]:
+    elif keys[pygame.K_LEFT] and snake_head[0] != 0:
         snake_head[0] -= snake_block_size
-    elif keys[pygame.K_RIGHT]:
+    elif keys[pygame.K_RIGHT] and snake_head[0] != dis_width-apple_diameter:
         snake_head[0] += snake_block_size
 
     if len(snake_list) > length:
@@ -70,6 +76,7 @@ while not game_over:
     for each_segment in snake_list[:-1]:
         if each_segment == snake_head:
             game_over = True
+            break
 
     dis.fill(white)
 
@@ -92,5 +99,6 @@ while not game_over:
 
     clock.tick(10)
 
-message_to_screen(red, "Game Over! Press Enter to play again.")
-pygame.time.wait(2000)
+if check_game_over(snake_list):
+    message_to_screen(red, "Game Over! Press Enter to play again.")
+    pygame.time.wait(2000)
