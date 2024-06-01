@@ -9,7 +9,7 @@ pygame.init()
 white = (255, 255, 255)
 yellow = (255, 255, 0)
 black = (0, 0, 0)
-red = (0, 0, 255)
+red = (255, 0, 0)
 
 dis_width = 800
 dis_height = 600
