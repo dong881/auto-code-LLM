@@ -38,7 +38,7 @@ def snake(snake_list):
 
 def message_to_screen(text_color, text):
     screen_text = font_style.render(text, True, text_color)
-    dis.blit(screen_text, [dis_width/6, dis_height/3])
+    dis.blit(screen_text, [dis_width//6, dis_height//3])
 
 def score_message_to_screen(text_color, text):
     screen_text = font_score.render(text, True, text_color)
@@ -54,7 +54,7 @@ while not game_over:
             sys.exit()
 
     keys = pygame.key.get_pressed()
-    
+
     if keys[pygame.K_UP]:
         snake_head[1] -= snake_block_size
     elif keys[pygame.K_DOWN]:
@@ -63,8 +63,6 @@ while not game_over:
         snake_head[0] -= snake_block_size
     elif keys[pygame.K_RIGHT]:
         snake_head[0] += snake_block_size
-
-    snake_list.append(snake_head)
 
     if len(snake_list) > length:
         del snake_list[0]
