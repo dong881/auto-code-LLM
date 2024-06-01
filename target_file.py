@@ -1,70 +1,75 @@
 
 import pygame
+import time
 import random
-import sys
-
 pygame.init()
 
-screen = pygame.display.set_mode((800, 600))
+white = (255, 255, 255)
+yellow = (255, 255, 0)
+black = (0, 0, 0)
 
+dis_width = 600
+dis_height = 400
+
+dis = pygame.display.set_mode((dis_width, dis_height))
+pygame.display.set_caption('Snake Game')
+
+clock = pygame.time.Clock()
+
+snake_block = 10
+apple_thickness = 10
+
+font_style = pygame.font.SysFont("comicsansms", 25)
 class Snake:
     def __init__(self):
-        self.body = [(200, 250), (190, 250), (180, 250)]
-        self.direction = (-10, 0)
-
+        self.length = 1
+        self.body = [[100, 50]]
     def move(self):
-        head = [x + self.direction[0] for x in self.body[-1]]
-        if head not in self.body[:-1]:
-            self.body.append(head)
-        else:
-            return False
-        return True
-
-    def grow(self):
-        head = [x + self.direction[0] for x in self.body[-1]]
-        self.body.append(head)
-
+        if len(self.body) > 1:
+            for i in range(len(self.body)-2, 0, -1):
+                self.body[i] = self.body[i-1]
+        self.body[0][0] += 10
+    def add_block(self):
+        self.body.append([self.body[-1][0], self.body[-1][1]])
 class Apple:
     def __init__(self):
-        self.position = (random.randint(0, 78) * 10, random.randint(0, 58) * 10)
+        self.x = round(random.randrange(0, dis_width - apple_thickness) / 10.0)*10
+        self.y = round(random.randrange(0, dis_height - apple_thickness) / 10.0)*10
 
-    def display(self):
-        pygame.draw.rect(screen, (255, 0, 0), (self.position[0], self.position[1], 10, 10))
-
-def game_loop(snake, apple):
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT and snake.direction != (0, -10):
-                    snake.direction = (-10, 0)
-                elif event.key == pygame.K_RIGHT and snake.direction != (0, 10):
-                    snake.direction = (0, 10)
-                elif event.key == pygame.K_UP and snake.direction != (10, 0):
-                    snake.direction = (-10, 0)
-                elif event.key == pygame.K_DOWN and snake.direction != (-10, 0):
-                    snake.direction = (0, -10)
-
-        if not snake.move():
-            game_over()
-
-        screen.fill((0, 0, 0))
-        for position in snake.body:
-            pygame.draw.rect(screen, (0, 255, 0), (position[0], position[1], 10, 10))
-
-        apple.display()
-
-        pygame.display.update()
-        pygame.time.Clock().tick(10)
-
-def game_over():
-    print("Game Over!")
-    pygame.quit()
-    sys.exit()
+def plot_snake(some_snake, color):
+    for pos in some_snake.body:
+        pygame.draw.rect(dis, color, [pos[0], pos[1], snake_block, snake_block])
+def plot_apple():
+    pygame.draw.rect(dis, yellow, [apple.x, apple.y, apple_thickness, apple_thickness])
 
 snake = Snake()
 apple = Apple()
 
-game_loop(snake, apple)
+while not done:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+
+    snake.move()
+
+    head = []
+    for pos in snake.body:
+        if pos[0] == snake_block * 5 and pos[1] == snake_block * 10:
+            head = [pos]
+            break
+    else:
+        head.append([snake_block * 5, snake_block * 10])
+
+    if head[0][0] > dis_width or head[0][0] < 0.0 or head[0][1] > dis_height or head[0][1] < 0.0:
+        done = True
+    for pos in head:
+        if pos in list(map(lambda x: x, snake.body[:-1])):
+            done = True
+
+    dis.fill(black)
+    plot_snake(snake, white)
+    plot_apple()
+
+    pygame.display.update()
+    clock.tick(10)
