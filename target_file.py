@@ -67,7 +67,8 @@ def handle_input(event):
         snake.direction = 'right'
 
 def update_score():
-    score_font.render(f"Score: {snake.length}", True, (0,0,0))
+    score_text = f"Score: {snake.length}"
+    score_font.render(score_text, True, (0,0,0))
 
 def check_collisions():
     if snake.position[-1] in apple_position:
