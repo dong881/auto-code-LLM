@@ -1,98 +1,130 @@
+
 import pygame
-import time
 import random
+import sys
+
 pygame.init()
 
-display_width = 800
-display_height = 600
+screen_width = 800
+screen_height = 600
 
-black = (0, 0, 0)
-white = (255, 255, 255)
-red = (255, 0, 0)
+screen = pygame.display.set_mode((screen_width, screen_height))
 
-block_size = 20
-font_style = pygame.font.SysFont("bahnschrift", 25)
+clock = pygame.time.Clock()
+score_font = pygame.font.Font(None, 50)
 
-def Your_snake_game():
-    game_over = False
-    snake_list = []
-    length_of_snake = 1
+snake_color = (0,255,0)
+apple_color = (255,0,0)
 
-    lead_x = display_width / 2
-    lead_y = display_height / 2
-    x_change = 0
-    y_change = 20
+class Snake:
+    def __init__(self):
+        self.position = [(100,100)]
+        self.direction = 'right'
+        self.length = len(self.position)
 
-    new_food = True
-    foodx = round(display_width * random.random()) * block_size
-    foody = round(display_height * random.random()) * block_size
-
-    clock = pygame.time.Clock()
-
-    while not game_over:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                game_over = True
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT and x_change != 20:
-                    x_change = -20
-                    y_change = 0
-                elif event.key == pygame.K_RIGHT and x_change != -20:
-                    x_change = 20
-                    y_change = 0
-                elif event.key == pygame.K_UP and y_change != -20:
-                    y_change = -20
-                    x_change = 0
-                elif event.key == pygame.K_DOWN and y_change != 20:
-                    y_change = 20
-                    x_change = 0
-
-        if new_food is False:
-            lead_x += x_change
-            lead_y += y_change
-
-            if lead_x < 0 or lead_x > display_width - block_size or lead_y < 0 or lead_y > display_height - block_size:
-                game_over = True
-
-            snake_head = []
-            snake_head.append(lead_x)
-            snake_head.append(lead_y)
-
-            snake_list.append(snake_head)
-
-            if len(snake_list) > length_of_snake:
-                del snake_list[0]
-
-            for each_segment in snake_list[:-1]:
-                if each_segment == list(snake_head):
-                    game_over = True
-
+    def move_snake(self):
+        if self.direction == 'up':
+            new_position = (self.position[-1][0], self.position[-1][1] - 10)
+        elif self.direction == 'down':
+            new_position = (self.position[-1][0], self.position[-1][1] + 10)
+        elif self.direction == 'left':
+            new_position = (self.position[-1][0] - 10, self.position[-1][1])
         else:
-            lead_x = foodx
-            lead_y = foody
+            new_position = (self.position[-1][0] + 10, self.position[-1][1])
 
-            new_food = False
+        if new_position in self.position[:-1]:
+            game_over()
+        else:
+            self.position.append(new_position)
 
-        screen.fill(black)
+    def eat_apple(self):
+        self.length += 1
 
-        for x_n, y_n in snake_list:
-            pygame.draw.rect(screen, white, [x_n, y_n, block_size, block_size])
+snake = Snake()
 
-        pygame.draw.rect(screen, red, [foodx, foody, block_size, block_size])
+apple_position = [random.randint(0, screen_width), random.randint(0, screen_height)]
 
-        font = font_style.render("Score: " + str(len(snake_list)), True, white)
-        screen.blit(font, [0, 20])
+def initialize_game():
+    pygame.init()
+    pygame.display.set_caption("Snake Game")
 
-        pygame.display.update()
+def create_snake():
+    global snake
+    snake = Snake()
 
-        clock.tick(10)
+def generate_apple():
+    global apple_position
+    apple_position = [random.randint(0, screen_width), random.randint(0, screen_height)]
 
-        if lead_x == foodx and lead_y == foody:
-            new_food = True
-            length_of_snake += 1
+def handle_input(event):
+    if event.key == pygame.K_UP and snake.direction != 'down':
+        snake.direction = 'up'
+    elif event.key == pygame.K_DOWN and snake.direction != 'up':
+        snake.direction = 'down'
+    elif event.key == pygame.K_LEFT and snake.direction != 'right':
+        snake.direction = 'left'
+    elif event.key == pygame.K_RIGHT and snake.direction != 'left':
+        snake.direction = 'right'
 
+def update_score():
+    score_font.render(f"Score: {snake.length}", True, (0,0,0))
+
+def check_collisions():
+    if snake.position[-1] in apple_position:
+        generate_apple()
+        snake.eat_apple()
+
+    for position in snake.position[:-1]:
+        if position == snake.position[-1]:
+            game_over()
+
+    if snake.position[-1][0] < 0 or snake.position[-1][0] >= screen_width or \
+       snake.position[-1][1] < 0 or snake.position[-1][1] >= screen_height:
+        game_over()
+
+def game_over():
     pygame.quit()
-    quit()
+    sys.exit()
 
-screen = pygame.display.set_mode((display_width, display_height))
-Your_snake_game()
+initialize_game()
+
+create_snake()
+
+generate_apple()
+
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == pygame.KEYDOWN:
+            handle_input(event)
+
+    screen.fill((255,255,255))
+
+    for position in snake.position:
+        pygame.draw.rect(screen, snake_color, (position[0], position[1], 10, 10))
+
+    apple_rect = pygame.Rect(*apple_position, 10, 10)
+    pygame.draw.rect(screen, apple_color, apple_rect)
+
+    update_score()
+
+    check_collisions()
+
+    if snake.direction == 'up':
+        snake.move_snake()
+    elif snake.direction == 'down':
+        snake.position.reverse()
+        snake.move_snake()
+        snake.position.reverse()
+    elif snake.direction == 'left':
+        for i in range(len(snake.position) - 1, -1, -1):
+            snake.position[i] = (snake.position[i][0] - 10, snake.position[i][1])
+    else:
+        for i in range(len(snake.position) - 1, -1, -1):
+            snake.position[i] = (snake.position[i][0] + 10, snake.position[i][1])
+
+    pygame.display.flip()
+
+    clock.tick(10)
